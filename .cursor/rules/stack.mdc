@@ -5,16 +5,16 @@ alwaysApply: true
 
 # Stack
 
-This is a Microsoft Fabric Data App (Rayfin) teaching demo.
+This is a read-only Microsoft Fabric Data App teaching demo.
 
 - React 19 + Vite 7 + TypeScript 5.7 + Tailwind 4
 - Visuals: `@microsoft/fabric-visuals` Vega-Lite + `@microsoft/fabric-datagrid`
-- Data on the home page is committed demo tables in `src/lib/demo-report/migration-pulse-data.ts`
-- Rayfin TypeScript models live in `rayfin/data/` (inspectable; the demo page does not call them)
+- Data: live DAX via `@microsoft/fabric-app-data` against a semantic model over Demo DW
+- Setup: `docs/GETTING_STARTED.md`
 
 Prefer small, reviewable diffs. Do not add catalog, admin, or Power BI embed.
 
 Verification after UI changes:
 
 1. `npm test`
-2. `npm run dev` and confirm `/` still renders Migration Pulse
+2. `npm run dev` — confirm Migration Pulse in the Fabric App embed (`fabricEmbedded=true`)

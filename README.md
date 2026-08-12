@@ -2,71 +2,108 @@
 
 Public teaching repo for **Build Microsoft Fabric Data Apps with Cursor** (Arizona Data Platform Users Group).
 
-The home page is **Migration Pulse**: KPIs plus Vega area, donut, heatmap, and a backlog grid. Data is committed demo tables so you can run without Fabric credentials.
+**Migration Pulse** is a read-only dashboard: KPIs, Vega area/donut/heatmap charts, and a sortable backlog grid. All visuals query a **live semantic model** over a Fabric **Warehouse** via DAX. There is **no offline demo mode**.
 
-## Quick start
+---
+
+## Start here
+
+**New clone?** Follow **[docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)** end to end.
+
+Short checklist:
 
 ```bash
 npm install
+npm run warehouse:sql -- --demo          # generate SQL → run in Demo DW
+# Create semantic model from Demo DW → Reporting → New semantic model
+cp fabric.yaml.example fabric.yaml       # semantic model IDs under semanticModels:
+npm run fabric:generate
+cp .env.fabric.example .env.fabric       # Fabric App env (incl. publishable key)
 npm run dev
+# Open Fabric App in portal: ?fabricEmbedded=true&devUri=http://localhost:5173
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Localhost alone does not load data. The Fabric portal provides auth and the DAX embed channel.
 
-## What to inspect
+---
 
-| Path | Why it exists |
-|------|----------------|
-| `src/pages/MigrationPulsePage.tsx` | The unique visualization |
-| `schema/` | schema_scraper-style Markdown Cursor must obey |
-| `.cursor/rules/` | Always-on constraints (stack, schema grounding, no-edit zones) |
-| `.cursor/skills/modify-fabric-data-app/` | One repeatable modification procedure for this app |
-| `docs/CONCEPTS.md` | Rules vs skills vs schema vs Rayfin vs Power BI |
-| `docs/skills-for-fabric.md` | Official Microsoft Fabric skills catalog + install |
-| `docs/talk/live-demo.md` | 15-minute exercise: add backlog-by-risk |
-| `rayfin/data/` | TypeScript models Rayfin uses to generate APIs and hosting |
+## Architecture
+
+```text
+Demo DW warehouse  →  semantic model (e.g. Demo SM)  →  DAX  →  React + Fabric visuals
+```
+
+| Path | Role |
+|------|------|
+| [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) | Full setup checklist |
+| [docs/wire-semantic-model.md](docs/wire-semantic-model.md) | Wiring reference |
+| [docs/CONCEPTS.md](docs/CONCEPTS.md) | Data layers, auth, vs Power BI |
+| `src/queries/migration-pulse-live/queries.ts` | DAX + column metadata |
+| `src/queries/migration-pulse/*.json` | Vega-Lite specs |
+| `warehouse/migration-pulse.sql` | Warehouse bootstrap |
+| `schema/tables/` | Schema context for Cursor |
+| `.cursor/skills/modify-fabric-data-app/` | Safe page change procedure |
+
+---
 
 ## Data layers
 
-This repo shows three related layers. They should stay aligned when you change visuals.
+| Layer | Location | Used by UI? |
+|-------|----------|-------------|
+| Warehouse SQL | `warehouse/` | Source data in Fabric |
+| Semantic model | Fabric portal (your item) | DAX target |
+| Live DAX | `src/queries/migration-pulse-live/` | **Yes** |
+| Vega specs | `src/queries/migration-pulse/` | Chart layout |
+| Seed rows | `src/lib/demo-report/migration-pulse-data.ts` | SQL generator only |
+| Schema Markdown | `schema/tables/` | Cursor grounding |
 
-| Layer | Location | Role |
-|-------|----------|------|
-| Schema Markdown | `schema/tables/` | What Cursor reads for column names and types |
-| Demo tables | `src/lib/demo-report/migration-pulse-data.ts` | What the home page renders today |
-| Rayfin entities | `rayfin/data/` | What Rayfin generates for APIs and hosting |
+---
 
-## Scaffolding (not used on the demo page)
+## Scripts
 
-Live DAX, Fabric client, auth, and `toDataTable` helpers from the Microsoft template live under `docs/examples/live-dax/`. Copy them into `src/` when you wire a semantic model. See `docs/CONCEPTS.md`.
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Vite dev server (loads `.env.fabric` via `predev`) |
+| `npm run fabric:generate` | `fabric.yaml` → `src/fabric.generated.ts` |
+| `npm run warehouse:sql -- --demo` | Generate warehouse bootstrap SQL |
+| `npm run schema:scrape` | Refresh `schema/tables/` from Demo DW |
+| `npm test` | Vitest (mocks DAX) |
+| `npm run skills:install` | Install official Fabric skills for Cursor (global by default) |
+| `npm run skills:list` | List project-scoped skills |
+| `npm run skills:list:global` | List global skills |
 
-## Live exercise
+---
 
-`master` does **not** include a "Backlog by risk" chart on purpose. Follow `docs/talk/live-demo.md` (or ask Cursor to use the `modify-fabric-data-app` skill).
+## Live exercise (talk)
 
-Fallback branch: `demo/backlog-by-risk` has the finished chart.
+See [docs/talk/live-demo.md](docs/talk/live-demo.md) or ask Cursor to use the `modify-fabric-data-app` skill.
 
-## Official Fabric skills (install + show)
+---
 
-Microsoft's platform catalog lives in [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric). Install it beside this repo:
+## Optional: official Fabric skills
+
+Install Microsoft's [skills-for-fabric](https://github.com/microsoft/skills-for-fabric) catalog with the [skills CLI](https://github.com/vercel-labs/skills):
 
 ```bash
+# Global (recommended for the full catalog — available in every project)
+npx skills add microsoft/skills-for-fabric -a cursor -g -y
+
+# Or from this repo (same default: global)
 npm run skills:install
 ```
 
-Then in Cursor: **File → Add Folder to Workspace** and select the cloned `skills-for-fabric` folder. Official `.cursorrules` and dozens of skills apply to warehouse, lakehouse, semantic model, and PBIP work. This repo's one skill covers the Rayfin Data App layer.
-
-See `docs/skills-for-fabric.md` for bundles, what it covers, and the gap this demo fills.
-
-## Deploy to Fabric (optional)
-
-Requires a Fabric workspace and Rayfin login. Not needed to learn from this repo.
+Project-scoped install (team-shared, commit the folders):
 
 ```bash
-npx rayfin login
-npx rayfin up
-npm run dev:fabric
+SKILLS_GLOBAL=0 npm run skills:install
+# or: npx skills add microsoft/skills-for-fabric -a cursor -y
 ```
+
+After install, open a new Cursor chat. List installed skills: `npx skills list -g`.
+
+Full scope options and bundles: [docs/skills-for-fabric.md](docs/skills-for-fabric.md).
+
+---
 
 ## License
 

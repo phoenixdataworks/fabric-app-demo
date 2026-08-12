@@ -1,48 +1,6 @@
-import type { ColumnDef, DataTable } from '@microsoft/fabric-visuals-core';
+import type { DataTable } from '@microsoft/fabric-visuals-core';
 
-/** Demo narrative: MSSQL → Snowflake + Power BI migration program. */
-
-export type KpiFormat = 'number' | 'percent';
-export type KpiSentiment = 'up' | 'down' | 'neutral';
-
-export interface MigrationKpi {
-  value: number;
-  delta: string;
-  label: string;
-  format: KpiFormat;
-  sentiment: KpiSentiment;
-}
-
-export const migrationKpis = {
-  reportsMigrated: {
-    value: 148,
-    delta: '+12 this month',
-    label: 'Reports on Snowflake',
-    format: 'number',
-    sentiment: 'up',
-  },
-  activeUsers: {
-    value: 892,
-    delta: '+6.4% vs prior month',
-    label: 'Monthly active consumers',
-    format: 'number',
-    sentiment: 'up',
-  },
-  avgTimeToFind: {
-    value: 47,
-    delta: '−18s vs legacy portal',
-    label: 'Median time to open report (sec)',
-    format: 'number',
-    sentiment: 'up',
-  },
-  endorsementRate: {
-    value: 72,
-    delta: '8 pending review',
-    label: 'Endorsed catalog assets (%)',
-    format: 'percent',
-    sentiment: 'neutral',
-  },
-} as const satisfies Record<string, MigrationKpi>;
+/** Seed rows for `npm run warehouse:sql -- --demo`. The UI reads live DAX only. */
 
 export const adoptionTrendTable: DataTable = {
   columns: [

@@ -1,31 +1,64 @@
 # Concepts
 
-Short reference for attendees. Read this after the talk or while exploring the repo.
+Short reference for attendees. Read this after the talk or while exploring the repo. For setup steps, start with **[GETTING_STARTED.md](GETTING_STARTED.md)**.
 
 ## Fabric Data Apps
 
-Microsoft Fabric Data Apps are interactive applications hosted as first-class items inside Fabric. They connect to semantic models, warehouses, and Rayfin-backed entities. Use them when a classic Power BI report cannot carry the interaction you need: custom layouts, write-back, embedded logic, or operational grids beside charts.
+Microsoft Fabric Data Apps are interactive React applications hosted inside Fabric. They connect to **semantic models** for governed read-only analytics. Use them when a classic Power BI report cannot carry the interaction you need: custom layouts, operational grids beside charts, or code-first UX.
 
-## Rayfin
+This demo is **read-only**: charts and grids display data; nothing is written back.
 
-Rayfin is the open-source SDK and CLI that powers Fabric Apps. You define data models in TypeScript with decorators; Rayfin generates APIs, handles authentication, provides hosting, and deploys the app. Inspect `rayfin/data/` in this repo for examples. The demo page reads committed tables in `src/lib/demo-report/` so clone-and-run works without Fabric login.
+## End-to-end data path
+
+```text
+Fabric Warehouse (Demo DW)
+    → semantic model (Direct Lake on SQL from Reporting tab)
+    → DAX (src/queries/migration-pulse-live/)
+    → @microsoft/fabric-visuals + @microsoft/fabric-datagrid
+    → Migration Pulse page
+```
+
+There is **no committed-data fallback** in the UI. The warehouse seed file (`migration-pulse-data.ts`) exists only to generate bootstrap SQL.
 
 ## Data layers
 
 | Layer | Location | Used on demo page? |
 |-------|----------|--------------------|
 | Schema Markdown | `schema/tables/` | Cursor grounding only |
-| Demo tables | `src/lib/demo-report/migration-pulse-data.ts` | Yes |
-| Rayfin entities | `rayfin/data/` | Deploy / API generation |
+| Warehouse SQL | `warehouse/migration-pulse.sql` | Loads Demo DW |
+| Semantic model | Fabric portal (e.g. Demo SM) | DAX source |
+| Live DAX | `src/queries/migration-pulse-live/` | **Yes** — KPIs, charts, grid |
+| Vega specs | `src/queries/migration-pulse/` | Chart layout |
+| Seed rows | `src/lib/demo-report/migration-pulse-data.ts` | SQL generator only |
 
-When you add a visual, keep column names consistent across all three where they overlap.
+When you add a visual, keep column names consistent across schema Markdown, DAX queries, and Vega field names.
+
+## Authentication
+
+| Scenario | Auth required? |
+|----------|----------------|
+| `http://localhost:5173` alone | Data does not load — embed channel missing |
+| Fabric App with `?fabricEmbedded=true&devUri=...` | **Yes** — Fabric host + `.env.fabric` |
+| Published Fabric App (production) | **Yes** — same handshake |
+
+Security for production read-only apps is enforced by:
+
+1. **Fabric workspace permissions** — who can open the app item
+2. **Semantic model RLS and roles** — what rows each user sees in DAX
+3. **Fabric portal embedding** — token handshake via `@microsoft/fabric-app-data` and minimal Rayfin auth packages
+
+## DAX and the semantic model
+
+- Connection alias **`migrationPulse`** in `fabric.yaml` maps to your semantic model IDs.
+- Dimension joins use **`LOOKUPVALUE`** so the model works even if you skip relationship setup in the model editor.
+- Test queries locally with the `fabric-app-data` CLI after `az login`.
 
 ## Data Apps vs Power BI reports
 
 | Choose a report when… | Choose a Data App when… |
 |------------------------|-------------------------|
-| Governed paginated or standard analytics | Custom UX on the same data |
-| Report consumers only | Interaction, filters, write-back |
+| Governed standard analytics | Custom UX on the same data |
+| Report consumers only | Rich interaction and layout control |
 | Power BI is the delivery surface | Code-first React + Fabric visuals |
 
 Migration Pulse shows the second case: heatmap, donut, area, and an operational backlog grid on one page.
@@ -34,22 +67,21 @@ Migration Pulse shows the second case: heatmap, donut, area, and an operational 
 
 | | Rules | Skills |
 |---|--------|--------|
-| Location | `.cursor/rules/*.mdc` | `.cursor/skills/<name>/SKILL.md` |
+| Location | `.cursor/rules/*.mdc` | `.cursor/skills/<name>/SKILL.md` (project) or `~/.agents/skills/` / `~/.cursor/skills/` (global) |
 | Role | Always-on invariants | Multi-step procedures |
-| This repo | 3 rules | 1 skill: `modify-fabric-data-app` |
-
-Rules say what must never happen (invent columns, edit secrets). Skills say how to complete a repeatable task safely.
+| This repo | 3 rules | 1 project skill: `modify-fabric-data-app` |
+| Official Fabric catalog | — | Install with `npx skills add microsoft/skills-for-fabric -a cursor -g -y` (see `docs/skills-for-fabric.md`) |
 
 ## Schema context
 
-Commit schema_scraper Markdown under `schema/`. Point rules at it. Fabric Git integration versions warehouse `.sql` and semantic model TMDL — valuable for ALM, but usually less LLM-friendly than structured Markdown. Best practice: use both. This demo shows the Markdown half.
+Commit schema_scraper Markdown under `schema/`. Fabric Git integration versions warehouse SQL and semantic model TMDL — valuable for ALM, but usually less LLM-friendly than structured Markdown. Best practice: use both. This demo shows the Markdown half plus warehouse bootstrap and live DAX.
 
 ## Official skills vs this repo
 
-Microsoft publishes [skills-for-fabric](https://github.com/microsoft/skills-for-fabric) for warehouses, lakehouses, semantic models, PBIP, Git, and more. Install with `npm run skills:install` and add that folder to your Cursor workspace.
+Microsoft publishes [skills-for-fabric](https://github.com/microsoft/skills-for-fabric) for warehouses, lakehouses, semantic models, PBIP, Git, and more. Install for Cursor with `npx skills add microsoft/skills-for-fabric -a cursor -g -y`, or run `npm run skills:install` from this repo.
 
-That catalog does **not** include a skill for modifying Rayfin TypeScript Data Apps. That gap is why this repo ships one custom skill. See `docs/skills-for-fabric.md` for details.
+That catalog does **not** include a skill for modifying this React Fabric Data App layer. This repo ships `.cursor/skills/modify-fabric-data-app/` for that gap. See `docs/skills-for-fabric.md`.
 
 ## Honesty
 
-Fabric Apps are still in preview. This demo uses committed data so the talk and clone path stay reliable. A production app would use `useSemanticModelQuery` and DAX against a live semantic model. Reference scaffolding for that path lives in `docs/examples/live-dax/` (copied from the Microsoft template this app was slimmed from).
+Fabric Apps are still in preview. This demo requires a live semantic model and Fabric portal embed for data. See **GETTING_STARTED.md** for the full path.

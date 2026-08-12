@@ -3,6 +3,8 @@
 **Duration target:** 12 minutes  
 **Starting state:** `master` has no "Backlog by risk" chart.
 
+**Prerequisite:** Attendees completed **[GETTING_STARTED.md](../GETTING_STARTED.md)** — semantic model, Fabric App, and portal embed working.
+
 ## On-stage prompt
 
 Copy into Cursor Agent (with this repo and the skill in context):
@@ -12,7 +14,8 @@ Use the modify-fabric-data-app skill.
 
 Add a Vega bar chart titled "Backlog by risk" to Migration Pulse.
 Use only columns from schema/tables/fact_migration_backlog.md.
-Aggregate the existing backlogTable rows by the risk column.
+Add DAX in migration-pulse-live/queries.ts that counts reports by risk.
+Wire with LiveVegaChart (not demo tables).
 Place the chart above the Migration backlog grid.
 Do not invent columns. Do not change auth or routing.
 ```
@@ -24,69 +27,47 @@ npm test
 npm run dev
 ```
 
-Confirm `/` shows the new chart and the demo-data banner still appears.
+Open the Fabric App with `?fabricEmbedded=true&devUri=http://localhost:5173`. Confirm the new chart loads from DAX and the **Live semantic model** badge still appears.
 
 ## Fallback (paste if Cursor fails)
 
-### 1. Create `src/queries/migration-pulse/backlog-by-risk.json`
-
-```json
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "width": "container",
-  "height": "container",
-  "data": { "name": "source" },
-  "mark": { "type": "bar" },
-  "encoding": {
-    "x": {
-      "field": "risk",
-      "type": "nominal",
-      "sort": ["Low", "Medium", "High"],
-      "title": "Risk"
-    },
-    "y": {
-      "aggregate": "count",
-      "type": "quantitative",
-      "title": "Reports"
-    },
-    "color": {
-      "field": "risk",
-      "type": "nominal",
-      "scale": {
-        "domain": ["Low", "Medium", "High"],
-        "range": ["#2d8a6f", "#c4a35a", "#c50f1f"]
-      },
-      "legend": null
-    },
-    "tooltip": [
-      { "field": "risk", "type": "nominal" },
-      { "aggregate": "count", "type": "quantitative", "title": "Reports" }
-    ]
-  },
-  "view": { "stroke": null }
-}
-```
-
-### 2. Update `src/queries/migration-pulse/index.ts`
-
-Add:
+### 1. Add to `src/queries/migration-pulse-live/queries.ts`
 
 ```ts
-import backlogByRiskSpec from './backlog-by-risk.json';
+export const backlogByRiskQuery = `
+EVALUATE
+SUMMARIZECOLUMNS(
+    fact_migration_backlog[risk],
+    "count", COUNTROWS(fact_migration_backlog)
+)
+`.trim();
 
-export const backlogByRiskVegaSpec = backlogByRiskSpec as VisualizationSpec;
+export const backlogByRiskColumnMetadata = {
+  'fact_migration_backlog[risk]': { name: 'risk', displayName: 'Risk' },
+  count: { name: 'count', displayName: 'Reports', format: '#,0' },
+} as const;
 ```
 
-### 3. Insert in `src/pages/MigrationPulsePage.tsx` (above Migration backlog)
+(Adjust metadata keys if the CLI returns bracketed names — see `to-data-table.ts`.)
+
+### 2. Create `src/queries/migration-pulse/backlog-by-risk.json`
+
+Use the Vega spec from the previous fallback in git history, or a simple bar chart on `risk` and `count`.
+
+### 3. Wire in `MigrationPulsePage.tsx`
 
 ```tsx
-<ChartCard
-  title="Backlog by risk"
-  subtitle="Count of in-flight reports by risk — from fact_migration_backlog.risk"
+<LiveVegaChart
+  query={backlogByRiskQuery}
+  columnMetadata={backlogByRiskColumnMetadata}
+  spec={backlogByRiskVegaSpec}
   minHeight={240}
->
-  <VegaVisual spec={backlogByRiskVegaSpec} data={backlogTable} theme={theme} />
-</ChartCard>
+/>
 ```
 
-Import `backlogByRiskVegaSpec` from `@/queries/migration-pulse`.
+Test DAX:
+
+```bash
+node node_modules/@microsoft/fabric-app-data-cli/dist/index.js query migrationPulse \
+  --query "EVALUATE SUMMARIZECOLUMNS(fact_migration_backlog[risk], \"count\", COUNTROWS(fact_migration_backlog))"
+```

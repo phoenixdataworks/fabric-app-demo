@@ -1,0 +1,10 @@
+# Copy to fabric.yaml and fill in workspace + semantic model IDs from the Fabric portal.
+# The alias migrationPulse must match SEMANTIC_MODEL_CONNECTION in queries.ts.
+# Then run: npm run fabric:generate
+activeProfile: default
+profiles:
+  default:
+    semanticModels:
+      migrationPulse:
+        workspaceId: YOUR-WORKSPACE-GUID
+        itemId: YOUR-SEMANTIC-MODEL-GUID

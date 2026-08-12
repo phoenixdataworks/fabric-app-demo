@@ -2,26 +2,29 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TARGET="${SKILLS_FOR_FABRIC_DIR:-$(dirname "$REPO_ROOT")/skills-for-fabric}"
-URL="https://github.com/microsoft/skills-for-fabric.git"
+cd "$REPO_ROOT"
 
-if [ -d "$TARGET/.git" ]; then
-  echo "skills-for-fabric already installed at: $TARGET"
-  echo "Updating..."
-  git -C "$TARGET" pull --ff-only
-else
-  echo "Cloning skills-for-fabric to: $TARGET"
-  git clone --depth 1 "$URL" "$TARGET"
+SCOPE_ARGS=()
+if [[ "${SKILLS_GLOBAL:-1}" == "1" || "${SKILLS_GLOBAL:-1}" == "true" ]]; then
+  SCOPE_ARGS=(-g)
 fi
 
+SKILL_ARGS=()
+if [[ -n "${SKILLS_FILTER:-}" ]]; then
+  SKILL_ARGS=(--skill "$SKILLS_FILTER")
+fi
+
+echo "Installing microsoft/skills-for-fabric for Cursor..."
+npx --yes skills add microsoft/skills-for-fabric -a cursor "${SCOPE_ARGS[@]}" "${SKILL_ARGS[@]}" -y
+
 echo ""
-echo "Installed. Cursor picks up:"
-echo "  - $TARGET/.cursorrules"
-echo "  - $TARGET/AGENTS.md"
-echo "  - $TARGET/skills/*/SKILL.md"
+if ((${#SCOPE_ARGS[@]})); then
+  echo "Scope: global (~/.agents/skills/ or ~/.cursor/skills/)"
+  echo "Verify: npx skills list -g"
+else
+  echo "Scope: project (.agents/skills/ or .cursor/skills/)"
+  echo "Verify: npx skills list"
+fi
 echo ""
-echo "To show in the talk:"
-echo "  1. Open this demo repo in Cursor (fabric-app-demo)"
-echo "  2. File → Add Folder to Workspace → $TARGET"
-echo "  3. Ask Cursor about warehouse, semantic model, or PBIP work — official skills apply"
-echo "  4. Ask about Migration Pulse changes — use modify-fabric-data-app in this repo"
+echo "Restart the Cursor agent session or open a new chat for skills to load."
+echo "Migration Pulse UI changes still use .cursor/skills/modify-fabric-data-app/ in this repo."

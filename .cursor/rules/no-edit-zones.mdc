@@ -7,9 +7,8 @@ alwaysApply: true
 
 NEVER edit unless the user explicitly names the file:
 
-- `rayfin/.env*` and any secrets
-- `rayfin/.lockfile.json`
+- `.env.warehouse` and any secrets
 - `.cursor/rules/` and `.cursor/skills/` during a normal feature change
 - `docs/talk/speaking-notes.md` during a visual change
 
-Do not run `rayfin up`, deploy, or change Fabric workspace IDs unless asked.
+Do not deploy or change Fabric workspace IDs unless asked.
