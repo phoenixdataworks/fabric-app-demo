@@ -12,6 +12,7 @@ import {
 } from '@/lib/demo-report/migration-pulse-data';
 import {
   adoptionTrendVegaSpec,
+  backlogByRiskVegaSpec,
   reportMixVegaSpec,
   teamReadinessVegaSpec,
 } from '@/queries/migration-pulse';
@@ -73,6 +74,20 @@ export function MigrationPulsePage() {
           <VegaVisual
             spec={teamReadinessVegaSpec}
             data={teamReadinessTable}
+            theme={theme}
+          />
+        </ChartCard>
+      </div>
+
+      <div className="mt-4">
+        <ChartCard
+          title="Backlog by risk"
+          subtitle="Count of in-flight reports by risk — from fact_migration_backlog.risk"
+          minHeight={240}
+        >
+          <VegaVisual
+            spec={backlogByRiskVegaSpec}
+            data={backlogTable}
             theme={theme}
           />
         </ChartCard>

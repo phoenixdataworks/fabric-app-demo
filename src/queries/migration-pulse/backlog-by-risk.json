@@ -1,0 +1,34 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": "container",
+  "data": { "name": "source" },
+  "mark": { "type": "bar" },
+  "encoding": {
+    "x": {
+      "field": "risk",
+      "type": "nominal",
+      "sort": ["Low", "Medium", "High"],
+      "title": "Risk"
+    },
+    "y": {
+      "aggregate": "count",
+      "type": "quantitative",
+      "title": "Reports"
+    },
+    "color": {
+      "field": "risk",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Low", "Medium", "High"],
+        "range": ["#2d8a6f", "#c4a35a", "#c50f1f"]
+      },
+      "legend": null
+    },
+    "tooltip": [
+      { "field": "risk", "type": "nominal" },
+      { "aggregate": "count", "type": "quantitative", "title": "Reports" }
+    ]
+  },
+  "view": { "stroke": null }
+}

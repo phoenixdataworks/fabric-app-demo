@@ -27,6 +27,6 @@ describe('App', () => {
     expect(screen.getByText(/Channel mix/i)).toBeInTheDocument();
     expect(screen.getByText(/Team readiness heatmap/i)).toBeInTheDocument();
     expect(screen.getByText(/Migration backlog/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Backlog by risk/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Backlog by risk/i)).toBeInTheDocument();
   });
 });
