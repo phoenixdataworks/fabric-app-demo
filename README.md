@@ -26,9 +26,25 @@ Open [http://localhost:5173](http://localhost:5173).
 | `docs/talk/live-demo.md` | 15-minute exercise: add backlog-by-risk |
 | `rayfin/data/` | TypeScript models Rayfin uses to generate APIs and hosting |
 
+## Data layers
+
+This repo shows three related layers. They should stay aligned when you change visuals.
+
+| Layer | Location | Role |
+|-------|----------|------|
+| Schema Markdown | `schema/tables/` | What Cursor reads for column names and types |
+| Demo tables | `src/lib/demo-report/migration-pulse-data.ts` | What the home page renders today |
+| Rayfin entities | `rayfin/data/` | What Rayfin generates for APIs and hosting |
+
+## Scaffolding (not used on the demo page)
+
+Live DAX, Fabric client, auth, and `toDataTable` helpers from the Microsoft template live under `docs/examples/live-dax/`. Copy them into `src/` when you wire a semantic model. See `docs/CONCEPTS.md`.
+
 ## Live exercise
 
-`main` does **not** include a "Backlog by risk" chart on purpose. Follow `docs/talk/live-demo.md` (or ask Cursor to use the `modify-fabric-data-app` skill).
+`master` does **not** include a "Backlog by risk" chart on purpose. Follow `docs/talk/live-demo.md` (or ask Cursor to use the `modify-fabric-data-app` skill).
+
+Fallback branch: `demo/backlog-by-risk` has the finished chart.
 
 ## Official Fabric skills (install + show)
 

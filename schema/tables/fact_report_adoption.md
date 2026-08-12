@@ -9,3 +9,7 @@ Monthly report counts on the legacy MSSQL path vs the Snowflake path.
 | month | nvarchar(10) | NO | Calendar month label (Jan, Feb, …) |
 | legacy_mssql | int | NO | Reports still served from MSSQL |
 | snowflake | int | NO | Reports served from the Snowflake path |
+
+## App field mapping
+
+Demo code in `migration-pulse-data.ts` uses camelCase column names: `legacyMssql`, `snowflake`.

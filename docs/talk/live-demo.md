@@ -1,7 +1,7 @@
 # Live demo: Backlog by risk
 
 **Duration target:** 12 minutes  
-**Starting state:** `main` has no "Backlog by risk" chart.
+**Starting state:** `master` has no "Backlog by risk" chart.
 
 ## On-stage prompt
 

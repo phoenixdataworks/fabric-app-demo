@@ -10,6 +10,16 @@ Microsoft Fabric Data Apps are interactive applications hosted as first-class it
 
 Rayfin is the open-source SDK and CLI that powers Fabric Apps. You define data models in TypeScript with decorators; Rayfin generates APIs, handles authentication, provides hosting, and deploys the app. Inspect `rayfin/data/` in this repo for examples. The demo page reads committed tables in `src/lib/demo-report/` so clone-and-run works without Fabric login.
 
+## Data layers
+
+| Layer | Location | Used on demo page? |
+|-------|----------|--------------------|
+| Schema Markdown | `schema/tables/` | Cursor grounding only |
+| Demo tables | `src/lib/demo-report/migration-pulse-data.ts` | Yes |
+| Rayfin entities | `rayfin/data/` | Deploy / API generation |
+
+When you add a visual, keep column names consistent across all three where they overlap.
+
 ## Data Apps vs Power BI reports
 
 | Choose a report when… | Choose a Data App when… |
@@ -42,4 +52,4 @@ That catalog does **not** include a skill for modifying Rayfin TypeScript Data A
 
 ## Honesty
 
-Fabric Apps are still in preview. This demo uses committed data so the talk and clone path stay reliable. A production app would use `use-semantic-model-query` and DAX against a live semantic model — the pattern is in the Microsoft template this app was slimmed from.
+Fabric Apps are still in preview. This demo uses committed data so the talk and clone path stay reliable. A production app would use `useSemanticModelQuery` and DAX against a live semantic model. Reference scaffolding for that path lives in `docs/examples/live-dax/` (copied from the Microsoft template this app was slimmed from).
