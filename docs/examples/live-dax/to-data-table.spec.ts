@@ -6,8 +6,8 @@
 //-----------------------------------------------------------------------
 
 import { describe, it, expect } from "vitest";
-import { toDataTable } from "@/lib/to-data-table";
-import type { ColumnMetadataMap } from "@/lib/to-data-table";
+import { toDataTable } from "./to-data-table";
+import type { ColumnMetadataMap } from "./to-data-table";
 import type { QueryTable } from "@microsoft/fabric-app-data";
 
 describe("toDataTable", () => {
