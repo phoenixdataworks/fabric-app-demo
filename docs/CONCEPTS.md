@@ -13,7 +13,7 @@ This demo is **read-only**: charts and grids display data; nothing is written ba
 ```text
 Fabric Warehouse (Demo DW)
     → semantic model (Direct Lake on SQL from Reporting tab)
-    → DAX (src/queries/migration-pulse-live/)
+    → DAX (src/queries/migration-pulse/queries.ts)
     → @microsoft/fabric-visuals + @microsoft/fabric-datagrid
     → Migration Pulse page
 ```
@@ -27,8 +27,7 @@ There is **no committed-data fallback** in the UI. The warehouse seed file (`mig
 | Schema Markdown | `schema/tables/` | Cursor grounding only |
 | Warehouse SQL | `warehouse/migration-pulse.sql` | Loads Demo DW |
 | Semantic model | Fabric portal (e.g. Demo SM) | DAX source |
-| Live DAX | `src/queries/migration-pulse-live/` | **Yes** — KPIs, charts, grid |
-| Vega specs | `src/queries/migration-pulse/` | Chart layout |
+| Live DAX + Vega | `src/queries/migration-pulse/` | **Yes** — KPIs, charts, grid |
 | Seed rows | `src/lib/demo-report/migration-pulse-data.ts` | SQL generator only |
 
 When you add a visual, keep column names consistent across schema Markdown, DAX queries, and Vega field names.
@@ -72,13 +71,21 @@ Migration Pulse shows the second case: heatmap, donut, area, and an operational 
 | This repo | 3 rules | 1 project skill: `modify-fabric-data-app` |
 | Official Fabric catalog | — | Install with `npx skills add microsoft/skills-for-fabric -a cursor -g -y` (see `docs/skills-for-fabric.md`) |
 
-## Schema context
+## Schema context (schema-scraper)
 
-Commit schema_scraper Markdown under `schema/`. Fabric Git integration versions warehouse SQL and semantic model TMDL — valuable for ALM, but usually less LLM-friendly than structured Markdown. Best practice: use both. This demo shows the Markdown half plus warehouse bootstrap and live DAX.
+Commit Markdown from [schema-scraper on PyPI](https://pypi.org/project/schema-scraper/) under `schema/tables/`. Use it to give Cursor and other AI tools **ground truth** for warehouse columns when writing SQL, bootstrap scripts, or DAX — instead of inventing fields.
+
+Fabric Git integration versions warehouse SQL and semantic model TMDL — valuable for ALM, but usually less LLM-friendly than structured Markdown. Best practice: use both. This demo shows the Markdown half plus warehouse bootstrap and live DAX.
+
+Install: `pip install "schema-scraper[mssql]"` · Scrape: `npm run schema:scrape` · Details: `schema/README.md`
 
 ## Official skills vs this repo
 
-Microsoft publishes [skills-for-fabric](https://github.com/microsoft/skills-for-fabric) for warehouses, lakehouses, semantic models, PBIP, Git, and more. Install for Cursor with `npx skills add microsoft/skills-for-fabric -a cursor -g -y`, or run `npm run skills:install` from this repo.
+Microsoft publishes [skills-for-fabric](https://github.com/microsoft/skills-for-fabric) for warehouses, lakehouses, semantic models, PBIP, Git, and more. Install for Cursor with:
+
+```bash
+npx skills add microsoft/skills-for-fabric -a cursor -g -y
+```
 
 That catalog does **not** include a skill for modifying this React Fabric Data App layer. This repo ships `.cursor/skills/modify-fabric-data-app/` for that gap. See `docs/skills-for-fabric.md`.
 

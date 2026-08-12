@@ -7,3 +7,17 @@ import teamReadinessSpec from './team-readiness.json';
 export const adoptionTrendVegaSpec = adoptionTrendSpec as VisualizationSpec;
 export const reportMixVegaSpec = reportMixSpec as VisualizationSpec;
 export const teamReadinessVegaSpec = teamReadinessSpec as VisualizationSpec;
+
+export {
+  adoptionTrendColumnMetadata,
+  adoptionTrendQuery,
+  backlogColumnMetadata,
+  backlogQuery,
+  channelMixColumnMetadata,
+  channelMixQuery,
+  kpiColumnMetadata,
+  kpiQuery,
+  SEMANTIC_MODEL_CONNECTION,
+  teamReadinessColumnMetadata,
+  teamReadinessQuery,
+} from './queries';

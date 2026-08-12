@@ -8,6 +8,9 @@ interface PortalShellProps {
   children: ReactNode;
 }
 
+const LOGO_FOR_LIGHT_THEME = '/logo-no-background.png';
+const LOGO_FOR_DARK_THEME = '/logo-white-no-background.png';
+
 export function PortalShell({ children }: PortalShellProps) {
   const { isDark, toggleTheme } = useThemeContext();
 
@@ -15,13 +18,20 @@ export function PortalShell({ children }: PortalShellProps) {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
-          <div>
-            <p className="text-200 font-medium uppercase tracking-wider text-muted-foreground">
-              Fabric Data App Demo
-            </p>
-            <h1 className="text-hero-700 font-semibold text-foreground">
-              Migration Pulse
-            </h1>
+          <div className="flex items-center gap-4">
+            <img
+              src={isDark ? LOGO_FOR_DARK_THEME : LOGO_FOR_LIGHT_THEME}
+              alt="Company logo"
+              className="h-10 w-auto shrink-0"
+            />
+            <div>
+              <p className="text-200 font-medium uppercase tracking-wider text-muted-foreground">
+                Fabric Data App Demo
+              </p>
+              <h1 className="text-hero-700 font-semibold text-foreground">
+                Migration Pulse
+              </h1>
+            </div>
           </div>
           <button
             type="button"

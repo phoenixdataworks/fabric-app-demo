@@ -5,7 +5,7 @@ import {
   kpiColumnMetadata,
   kpiQuery,
   SEMANTIC_MODEL_CONNECTION,
-} from '@/queries/migration-pulse-live/queries';
+} from '@/queries/migration-pulse/queries';
 
 const KPI_ITEMS = [
   { field: 'reportsOnSnowflake', label: 'Reports on Snowflake' },

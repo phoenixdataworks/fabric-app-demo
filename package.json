@@ -14,7 +14,6 @@
     "test": "vitest run",
     "verify": "npm run lint && npm test && npm run build",
     "fabric:generate": "node node_modules/@microsoft/fabric-app-data-cli/dist/index.js generate -o src/fabric.generated.ts",
-    "skills:install": "bash scripts/install-skills-for-fabric.sh",
     "skills:list": "npx --yes skills list",
     "skills:list:global": "npx --yes skills list -g",
     "warehouse:sql": "tsx scripts/generate-warehouse-sql.ts",

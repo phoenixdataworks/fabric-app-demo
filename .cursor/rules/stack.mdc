@@ -14,7 +14,4 @@ This is a read-only Microsoft Fabric Data App teaching demo.
 
 Prefer small, reviewable diffs. Do not add catalog, admin, or Power BI embed.
 
-Verification after UI changes:
-
-1. `npm test`
-2. `npm run dev` — confirm Migration Pulse in the Fabric App embed (`fabricEmbedded=true`)
+Before marking any change complete, follow `.cursor/rules/change-completion.mdc` (docs in `docs/`, tests, thermo-nuclear review).

@@ -5,20 +5,18 @@ import { MigrationPulseKpis } from '@/components/demo/MigrationPulseKpis';
 import { PortalShell } from '@/components/layout/PortalShell';
 import { SEMANTIC_MODEL_NAME } from '@/config/semantic-model';
 import {
-  adoptionTrendVegaSpec,
-  reportMixVegaSpec,
-  teamReadinessVegaSpec,
-} from '@/queries/migration-pulse';
-import {
   adoptionTrendColumnMetadata,
   adoptionTrendQuery,
+  adoptionTrendVegaSpec,
   backlogColumnMetadata,
   backlogQuery,
   channelMixColumnMetadata,
   channelMixQuery,
+  reportMixVegaSpec,
   teamReadinessColumnMetadata,
   teamReadinessQuery,
-} from '@/queries/migration-pulse-live/queries';
+  teamReadinessVegaSpec,
+} from '@/queries/migration-pulse';
 
 export function MigrationPulsePage() {
   return (

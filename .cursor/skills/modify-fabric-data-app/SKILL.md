@@ -35,12 +35,17 @@ Read before editing:
 6. Export the spec from `src/queries/migration-pulse/index.ts`.
 7. Wire `ChartCard` + `LiveVegaChart` or `LiveDataGrid` in `MigrationPulsePage.tsx`.
 8. Do not change auth, routing, or branding unless asked.
+9. Add a change doc under `docs/changes/` (see `docs/changes/README.md`). Cover product and technical impact.
+10. Run the completion checklist in `.cursor/rules/change-completion.mdc` before marking the change done.
 
 ## Verification
 
-- `npm test`
+Follow `.cursor/rules/change-completion.mdc`:
+
+- `npm run verify` (lint + test + build)
 - Test DAX: `node node_modules/@microsoft/fabric-app-data-cli/dist/index.js query migrationPulse --query "..."`
 - `npm run dev` — confirm the visual in the **Fabric App** embed (`fabricEmbedded=true`)
+- Thermo-nuclear code quality review via `thermo-nuclear-code-quality-review-subagent`
 
 ## Avoid
 

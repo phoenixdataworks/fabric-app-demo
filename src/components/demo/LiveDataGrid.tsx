@@ -7,7 +7,7 @@ import {
   type ColumnMetadataMap,
   toDataTable,
 } from '@/lib/to-data-table';
-import { SEMANTIC_MODEL_CONNECTION } from '@/queries/migration-pulse-live/queries';
+import { SEMANTIC_MODEL_CONNECTION } from '@/queries/migration-pulse/queries';
 
 interface LiveDataGridProps {
   query: string;

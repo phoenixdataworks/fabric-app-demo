@@ -31,7 +31,7 @@ Do **not** use workspace **New item → Semantic model** (OneLake / lakehouse pa
 3. Add: `dim_team`, `dim_channel`, `fact_report_adoption`, `fact_channel_mix`, `fact_team_readiness`, `fact_migration_backlog`.
 4. **Save**.
 
-Relationships are **optional**. Queries in `src/queries/migration-pulse-live/queries.ts` use **`LOOKUPVALUE`** to resolve dimension names without model relationships.
+Relationships are **optional**. Queries in `src/queries/migration-pulse/queries.ts` use **`LOOKUPVALUE`** to resolve dimension names without model relationships.
 
 Alternative: Power BI Desktop → **OneLake** → warehouse SQL endpoint → Import or DirectQuery → Publish.
 
@@ -150,7 +150,7 @@ Open the **Fabric App** URL with:
 |------|------|
 | `fabric.yaml` | Connection IDs (gitignored) |
 | `src/fabric.generated.ts` | Generated client config |
-| `src/queries/migration-pulse-live/queries.ts` | DAX strings |
+| `src/queries/migration-pulse/queries.ts` | DAX strings |
 | `src/components/demo/LiveVegaChart.tsx` | Chart + DAX hook |
 | `src/components/demo/LiveDataGrid.tsx` | Grid + DAX hook |
 | `src/hooks/use-semantic-model-query.ts` | Query execution |

@@ -25,7 +25,7 @@ npm run dev + Fabric portal       →  Migration Pulse page with live DAX
 | Warehouse SQL | `warehouse/migration-pulse.sql` | Create and load six tables in Demo DW |
 | Schema docs | `schema/tables/*.md` | Cursor grounding (scrape from warehouse) |
 | Seed row source | `src/lib/demo-report/migration-pulse-data.ts` | **SQL generator only** — not used by the UI |
-| DAX queries | `src/queries/migration-pulse-live/queries.ts` | What the app executes |
+| DAX queries | `src/queries/migration-pulse/queries.ts` | What the app executes |
 | Vega specs | `src/queries/migration-pulse/*.json` | Chart layout only |
 | Connection config | `fabric.yaml` → `src/fabric.generated.ts` | Semantic model workspace + item IDs |
 | Portal auth | `.env.fabric` | Fabric App item IDs and publishable key |
@@ -37,7 +37,8 @@ npm run dev + Fabric portal       →  Migration Pulse page with live DAX
 - Node.js 20+ and `npm install` in this repo
 - A Fabric workspace with a **Warehouse** named **Demo DW** (or your own; update docs accordingly)
 - Permission to create a **semantic model** and a **Fabric App** item in that workspace
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) for optional schema scrape (`az login`)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) for schema scrape (`az login`)
+- [schema-scraper](https://pypi.org/project/schema-scraper/) on PyPI — `pip install "schema-scraper[mssql]"` (see `schema/README.md`)
 - Tenant setting: **Semantic Model Execute Queries REST API** enabled (Fabric admin)
 
 ---
@@ -64,13 +65,16 @@ Tables created:
 | `fact_team_readiness` | Weekly readiness scores |
 | `fact_migration_backlog` | In-flight migrations |
 
-Optional — refresh schema Markdown from the live warehouse:
+Optional — refresh schema Markdown for Cursor (accurate columns for SQL and DAX):
 
 ```bash
+pip install "schema-scraper[mssql]"   # once — https://pypi.org/project/schema-scraper/
 cp .env.warehouse.example .env.warehouse   # fill SQL endpoint + tenant
 az login --tenant YOUR-TENANT-GUID --allow-no-subscriptions
 npm run schema:scrape
 ```
+
+Schema-scraper writes table docs under `schema/tables/` so your AI does not invent column names against production or warehouse tables.
 
 See `warehouse/README.md` and `schema/README.md`.
 
@@ -217,7 +221,7 @@ npm run dev                 # local UI (portal embed required for data)
 npm test                    # unit tests (mock DAX)
 npm run fabric:generate     # fabric.yaml → src/fabric.generated.ts
 npm run warehouse:sql -- --demo
-npm run schema:scrape         # refresh schema/tables from Demo DW
+npm run schema:scrape         # refresh schema/tables/ (requires pip install schema-scraper[mssql])
 ```
 
 ---
@@ -227,6 +231,7 @@ npm run schema:scrape         # refresh schema/tables from Demo DW
 - **Concepts:** `docs/CONCEPTS.md`
 - **Detailed wiring reference:** `docs/wire-semantic-model.md`
 - **Change the page safely:** `.cursor/skills/modify-fabric-data-app/SKILL.md`
+- **Talk agenda:** `docs/talk/agenda.md`
 - **Live talk exercise:** `docs/talk/live-demo.md`
 
 ---
@@ -241,14 +246,8 @@ Install for Cursor with the [skills CLI](https://github.com/vercel-labs/skills):
 # Global (recommended — full catalog, every project)
 npx skills add microsoft/skills-for-fabric -a cursor -g -y
 
-# Or use this repo's helper (defaults to global)
-npm run skills:install
-```
-
-Project-scoped (team-shared; commit `.cursor/skills/` or `.agents/skills/`):
-
-```bash
-SKILLS_GLOBAL=0 npm run skills:install
+# Project-scoped (team-shared; commit skill folders)
+npx skills add microsoft/skills-for-fabric -a cursor -y
 ```
 
 After install, open a new Cursor chat. Verify: `npx skills list -g`.

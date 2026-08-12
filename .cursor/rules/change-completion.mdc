@@ -1,0 +1,42 @@
+---
+description: Document changes in docs/, run tests, and thermo-nuclear review before completion
+alwaysApply: true
+---
+
+# Change completion
+
+Do not mark a change complete until all steps below pass.
+
+## 1. Document the change
+
+Add or update a file under `docs/` for every non-trivial change. See `docs/changes/README.md`.
+
+Each change doc must include:
+
+- **Product:** what users see, demo impact, and why the change matters
+- **Technical:** files touched, data/query/schema impact, setup or wiring changes
+
+Prefer `docs/changes/YYYY-MM-DD-short-slug.md` for discrete changes. Update existing docs (for example `GETTING_STARTED.md`, `CONCEPTS.md`) when setup or architecture changes.
+
+Use STE per `.cursor/rules/technical-english.mdc`.
+
+## 2. Run tests
+
+Run commands that match the change scope:
+
+| Scope | Commands |
+|-------|----------|
+| Any code change | `npm test` |
+| TypeScript / lint | `npm run lint` |
+| Build surface | `npm run build` |
+| Full gate | `npm run verify` (lint + test + build) |
+| UI / Migration Pulse | `npm run dev` — confirm in Fabric App embed (`fabricEmbedded=true`) |
+| DAX change | `node node_modules/@microsoft/fabric-app-data-cli/dist/index.js query migrationPulse --query "..."` |
+
+Default: run `npm run verify` plus any scope-specific commands above.
+
+## 3. Thermo-nuclear code quality review
+
+Launch the `thermo-nuclear-code-quality-review-subagent` via the Task tool on the branch diff before completion.
+
+Fix or explicitly defer every structural finding. Do not skip this step.

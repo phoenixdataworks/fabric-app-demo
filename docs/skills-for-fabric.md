@@ -35,24 +35,9 @@ npx skills add microsoft/skills-for-fabric -a cursor -y
 npx skills add microsoft/skills-for-fabric -a cursor -g -y
 ```
 
-**From this repo** (defaults to global so the full catalog is not vendored here):
+Install one skill:
 
 ```bash
-npm run skills:install
-```
-
-Set `SKILLS_GLOBAL=0` for a project-scoped install. Set `SKILLS_FILTER=semantic-model-authoring` to install one skill.
-
-**Examples**:
-
-```bash
-# Project-level (team shared)
-npx skills add microsoft/skills-for-fabric -a cursor -y
-
-# Global (available everywhere)
-npx skills add microsoft/skills-for-fabric -a cursor -g -y
-
-# Specific skill, global, non-interactive
 npx skills add microsoft/skills-for-fabric --skill semantic-model-authoring -a cursor -g -y
 ```
 

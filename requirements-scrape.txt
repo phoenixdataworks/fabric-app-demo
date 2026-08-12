@@ -1,0 +1,2 @@
+# Optional: schema scrape from Fabric Warehouse (see schema/README.md)
+schema-scraper[mssql]

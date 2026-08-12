@@ -1,21 +1,55 @@
 #!/usr/bin/env bash
-# Scrape Fabric Warehouse metadata into schema/ using a local schema_scraper checkout.
+# Scrape Fabric Warehouse metadata into schema/ using schema-scraper.
+# Install: pip install "schema-scraper[mssql]"  (https://pypi.org/project/schema-scraper/)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCHEMA_SCRAPER_DIR="${SCHEMA_SCRAPER_DIR:-$(dirname "$REPO_ROOT")/schema_scraper}"
-SCHEMA_SCRAPER_BIN="${SCHEMA_SCRAPER_BIN:-$SCHEMA_SCRAPER_DIR/.venv/bin/schema-scraper}"
-SCHEMA_SCRAPER_PYTHON="${SCHEMA_SCRAPER_PYTHON:-$SCHEMA_SCRAPER_DIR/.venv/bin/python}"
 ENV_FILE="${WAREHOUSE_ENV_FILE:-$REPO_ROOT/.env.warehouse}"
 STAGING_DIR="$REPO_ROOT/warehouse/.schema-scrape-staging"
 SCHEMA_OUT="$REPO_ROOT/schema/tables"
 
-if [[ ! -x "$SCHEMA_SCRAPER_BIN" ]]; then
-  echo "schema-scraper not found at: $SCHEMA_SCRAPER_BIN" >&2
-  echo "Install it in the local repo:" >&2
-  echo "  cd \"$SCHEMA_SCRAPER_DIR\"" >&2
-  echo "  python3 -m venv .venv && source .venv/bin/activate" >&2
-  echo "  pip install -e \".[mssql]\"" >&2
+resolve_schema_scraper_bin() {
+  if [[ -n "${SCHEMA_SCRAPER_BIN:-}" && -x "$SCHEMA_SCRAPER_BIN" ]]; then
+    return 0
+  fi
+  if command -v schema-scraper >/dev/null 2>&1; then
+    SCHEMA_SCRAPER_BIN="$(command -v schema-scraper)"
+    return 0
+  fi
+  local fallback="$SCHEMA_SCRAPER_DIR/.venv/bin/schema-scraper"
+  if [[ -x "$fallback" ]]; then
+    SCHEMA_SCRAPER_BIN="$fallback"
+    return 0
+  fi
+  return 1
+}
+
+resolve_schema_scraper_python() {
+  if [[ -n "${SCHEMA_SCRAPER_PYTHON:-}" && -x "$SCHEMA_SCRAPER_PYTHON" ]]; then
+    return 0
+  fi
+  if python3 -c "import schema_scraper" 2>/dev/null; then
+    SCHEMA_SCRAPER_PYTHON="$(python3 -c 'import sys; print(sys.executable)')"
+    return 0
+  fi
+  local fallback="$SCHEMA_SCRAPER_DIR/.venv/bin/python"
+  if [[ -x "$fallback" ]] && "$fallback" -c "import schema_scraper" 2>/dev/null; then
+    SCHEMA_SCRAPER_PYTHON="$fallback"
+    return 0
+  fi
+  return 1
+}
+
+if ! resolve_schema_scraper_bin; then
+  echo "schema-scraper not found on PATH." >&2
+  echo "" >&2
+  echo "Install from PyPI:" >&2
+  echo '  pip install "schema-scraper[mssql]"' >&2
+  echo "" >&2
+  echo "Docs: https://pypi.org/project/schema-scraper/" >&2
+  echo "" >&2
+  echo "Or set SCHEMA_SCRAPER_BIN to a local checkout venv binary." >&2
   exit 1
 fi
 
@@ -30,13 +64,14 @@ fi
 
 DB_AUTH="${DB_AUTH:-ActiveDirectoryCli}"
 
-echo "Using schema_scraper: $SCHEMA_SCRAPER_DIR"
+echo "Using schema-scraper: $SCHEMA_SCRAPER_BIN"
 echo "Warehouse database: $DB_NAME"
 echo "Auth mode: $DB_AUTH"
 
 if [[ "$DB_AUTH" == "ActiveDirectoryCli" || "$DB_AUTH" == "ActiveDirectoryAccessToken" ]]; then
-  if [[ ! -x "$SCHEMA_SCRAPER_PYTHON" ]]; then
-    echo "Python not found at: $SCHEMA_SCRAPER_PYTHON" >&2
+  if ! resolve_schema_scraper_python; then
+    echo "Python with schema_scraper package not found." >&2
+    echo 'Install: pip install "schema-scraper[mssql]"' >&2
     exit 1
   fi
   echo "Using Azure CLI token auth (no browser popup)."
