@@ -1,0 +1,15 @@
+---
+description: Never invent columns; use schema Markdown as source of truth
+globs: src/**/*.{ts,tsx,json}
+---
+
+# Schema grounding
+
+Before adding or changing a visual, query, or table column:
+
+1. Read `schema/README.md` and the matching file under `schema/tables/`.
+2. Use only columns listed there.
+3. NEVER invent columns, measures, or tables that are not in those Markdown files.
+4. If the user asks for a field that is not in schema Markdown, stop and say it is not in the schema.
+
+The live demo exercise uses `fact_migration_backlog.risk` (and optionally `domain`).

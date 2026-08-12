@@ -1,0 +1,41 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": "container",
+  "title": {
+    "text": "Report footprint shift",
+    "fontSize": 14,
+    "anchor": "start"
+  },
+  "data": { "name": "source" },
+  "transform": [
+    { "fold": ["legacyMssql", "snowflake"], "as": ["stack", "count"] },
+    {
+      "calculate": "datum.stack === 'snowflake' ? 'Snowflake path' : 'Legacy MSSQL'",
+      "as": "path"
+    }
+  ],
+  "mark": { "type": "area", "interpolate": "monotone", "line": true, "opacity": 0.85 },
+  "encoding": {
+    "x": { "field": "month", "type": "ordinal", "title": null, "sort": null },
+    "y": { "field": "count", "type": "quantitative", "title": "Active reports", "stack": null },
+    "color": {
+      "field": "path",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Legacy MSSQL", "Snowflake path"],
+        "range": ["#94a3b8", "#0f6cbd"]
+      },
+      "legend": { "orient": "bottom", "title": null }
+    },
+    "tooltip": [
+      { "field": "month", "type": "ordinal" },
+      { "field": "path", "type": "nominal" },
+      { "field": "count", "type": "quantitative", "format": ",.0f" }
+    ]
+  },
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "grid": true }
+  }
+}

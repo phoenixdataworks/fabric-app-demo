@@ -1,0 +1,28 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": "container",
+  "title": {
+    "text": "Catalog composition",
+    "fontSize": 14,
+    "anchor": "start"
+  },
+  "data": { "name": "source" },
+  "mark": { "type": "arc", "innerRadius": 72, "outerRadius": 128, "padAngle": 0.02 },
+  "encoding": {
+    "theta": { "field": "reports", "type": "quantitative", "stack": true },
+    "color": {
+      "field": "channel",
+      "type": "nominal",
+      "scale": {
+        "range": ["#0f6cbd", "#5a9fd4", "#c4a35a", "#2d8a6f"]
+      },
+      "legend": { "orient": "right", "title": null }
+    },
+    "tooltip": [
+      { "field": "channel", "type": "nominal" },
+      { "field": "reports", "type": "quantitative", "format": ",.0f" }
+    ]
+  },
+  "view": { "stroke": null }
+}

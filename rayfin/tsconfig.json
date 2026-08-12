@@ -1,0 +1,21 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": ".temp/compiled",
+        "rootDir": ".",
+        "declaration": true,
+        "composite": true,
+        "noEmit": false,
+        "emitDeclarationOnly": true,
+        "allowImportingTsExtensions": false,
+        "tsBuildInfoFile": "./.temp/tsconfig.rayfin.tsbuildinfo",
+        "module": "nodenext",
+        "moduleResolution": "nodenext"
+    },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        ".temp/**/*"
+    ]
+}

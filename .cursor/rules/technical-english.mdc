@@ -1,0 +1,22 @@
+---
+description: Use Standard Technical English (STE) in all technical writing
+alwaysApply: true
+---
+
+# Standard Technical English (STE)
+
+Use Standard Technical English, formally known as Simplified Technical English (STE) and governed by the ASD-STE100 standard. STE is a controlled language designed to eliminate ambiguity in technical documentation.
+
+Apply STE when writing or editing:
+
+- User-facing copy, labels, and error messages
+- README, schema docs, comments, commit messages, and PR descriptions
+- Explanations to the user in chat
+
+Guidelines:
+
+- Use short, direct sentences with one idea per sentence.
+- Prefer common, concrete words; avoid jargon unless the project already uses it.
+- Use active voice and imperative instructions for procedures.
+- Be specific; avoid vague terms like "some", "often", or "etc."
+- Do not invent requirements or steps that are not supported by the code or schema.
